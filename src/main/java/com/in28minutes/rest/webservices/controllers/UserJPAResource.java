@@ -1,7 +1,6 @@
 package com.in28minutes.rest.webservices.controllers;
 
 import com.in28minutes.rest.webservices.controllers.exceptions.UserNotFoundException;
-import com.in28minutes.rest.webservices.daos.UserDaoService;
 import com.in28minutes.rest.webservices.domain.User;
 import com.in28minutes.rest.webservices.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +21,6 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 @RestController
 public class UserJPAResource {
 
-    @Autowired
-    private UserDaoService service;
 
     @Autowired
     private UserRepository userRepository;
@@ -49,7 +46,7 @@ public class UserJPAResource {
 
     @PostMapping("/jpa/users")
     public ResponseEntity<?> createUser(@Valid @RequestBody User user) {
-        User savedUser = service.save(user);
+        User savedUser = userRepository.save(user);
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequest()
                 .path("/{id}")
@@ -59,9 +56,6 @@ public class UserJPAResource {
 
     @DeleteMapping("/jpa/users/{id}")
     public void deleteUser(@PathVariable int id) {
-        User user = service.deleteById(id);
-        if (user == null) {
-            throw new UserNotFoundException("Id: " + id);
-        }
+        userRepository.deleteById(id);
     }
 }
