@@ -1,6 +1,7 @@
 package com.in28minutes.rest.webservices.controllers;
 
 import com.in28minutes.rest.webservices.controllers.exceptions.UserNotFoundException;
+import com.in28minutes.rest.webservices.domain.Post;
 import com.in28minutes.rest.webservices.domain.User;
 import com.in28minutes.rest.webservices.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -57,5 +58,16 @@ public class UserJPAResource {
     @DeleteMapping("/jpa/users/{id}")
     public void deleteUser(@PathVariable int id) {
         userRepository.deleteById(id);
+    }
+
+    @GetMapping("/jpa/users/{id}/posts")
+    public List<Post> retrieveAllUsers(@PathVariable Integer id) {
+        Optional<User> userOptional = userRepository.findById(id);
+
+        if (!userOptional.isPresent()) {
+            throw new UserNotFoundException("id - " + id);
+        }
+
+        return userOptional.get().getPosts();
     }
 }
