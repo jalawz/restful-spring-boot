@@ -3,6 +3,7 @@ package com.in28minutes.rest.webservices.controllers;
 import com.in28minutes.rest.webservices.controllers.exceptions.UserNotFoundException;
 import com.in28minutes.rest.webservices.domain.Post;
 import com.in28minutes.rest.webservices.domain.User;
+import com.in28minutes.rest.webservices.repositories.PostRepository;
 import com.in28minutes.rest.webservices.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.Resource;
@@ -25,6 +26,9 @@ public class UserJPAResource {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PostRepository postRepository;
 
     // retrieveAllUsers
     @GetMapping("/jpa/users")
@@ -69,5 +73,26 @@ public class UserJPAResource {
         }
 
         return userOptional.get().getPosts();
+    }
+
+    @PostMapping("/jpa/users/{id}/posts")
+    public ResponseEntity<?> createPost(@PathVariable Integer id, @RequestBody Post post) {
+        Optional<User> userOptional = userRepository.findById(id);
+
+        if (!userOptional.isPresent()) {
+            throw new UserNotFoundException("id - " + id);
+        }
+
+        User user = userOptional.get();
+
+        post.setUser(user);
+
+        postRepository.save(post);
+
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(post.getId()).toUri();
+        return ResponseEntity.created(uri).build();
     }
 }
