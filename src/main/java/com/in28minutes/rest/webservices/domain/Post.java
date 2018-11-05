@@ -1,18 +1,25 @@
 package com.in28minutes.rest.webservices.domain;
 
+import javax.persistence.*;
+
+@Entity
 public class Post {
 
+    @Id
+    @GeneratedValue
     private Integer id;
-    private String title;
-    private String body;
+    private String description;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    private User user;
 
     public Post() {
     }
 
-    public Post(Integer id, String title, String body) {
+    public Post(Integer id, String description, User user) {
         this.id = id;
-        this.title = title;
-        this.body = body;
+        this.description = description;
+        this.user = user;
     }
 
     public Integer getId() {
@@ -23,20 +30,27 @@ public class Post {
         this.id = id;
     }
 
-    public String getTitle() {
-        return title;
+    public String getDescription() {
+        return description;
     }
 
-    public void setTitle(String title) {
-        this.title = title;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
-    public String getBody() {
-        return body;
+    public User getUser() {
+        return user;
     }
 
-    public void setBody(String body) {
-        this.body = body;
+    public void setUser(User user) {
+        this.user = user;
     }
 
+    @Override
+    public String toString() {
+        return "Post{" +
+                "id=" + id +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }
